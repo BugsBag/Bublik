@@ -98,8 +98,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     NSApp.activate(ignoringOtherApps: true)
   }
 
-    /// Null the reference when closing the window to free memory
   func windowWillClose(_ notification: Notification) {
+      // If the accessibility setup window is closed without granting permissions, the app terminates.
+    if !AccessibilityManager.isTrusted() {
+      AppUtils.quit()
+    }
     settingsWindow = nil
   }
 }

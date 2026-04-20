@@ -28,4 +28,9 @@ enum AppUtils {
       }
     }
   }
+  
+    /// Terminates the application
+  static func quit() {
+    NSApp.terminate(nil)
+  }
 }
