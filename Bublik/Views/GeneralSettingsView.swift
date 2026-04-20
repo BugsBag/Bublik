@@ -9,6 +9,8 @@ struct GeneralSettingsView: View {
     return current ?? "en"
   }()
   
+  @State private var isRestartButtonDisabled = false
+  
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
         // Autostart section
@@ -53,11 +55,15 @@ struct GeneralSettingsView: View {
       settingRow(
         title: String(localized: "Restart application"),
         description: String(localized: "All changes will be saved.")) {
-          Button(action: AppUtils.relaunch) {
+          Button {
+            isRestartButtonDisabled = true
+            AppUtils.relaunch()
+          } label: {
             Label("Restart application", systemImage: "arrow.clockwise")
           }
           .buttonStyle(.borderedProminent)
           .controlSize(.small)
+          .disabled(isRestartButtonDisabled)
         }
     }
     .padding()
