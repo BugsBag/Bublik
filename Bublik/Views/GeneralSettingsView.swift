@@ -21,12 +21,12 @@ struct GeneralSettingsView: View {
               // skip adding the title to the localization
             Text(verbatim: "")
           }
-            .toggleStyle(.switch)
-            .labelsHidden()
-            .controlSize(.small)
-            .onChange(of: launchAtLogin) { _, newValue in
-              toggleAutoStart(enabled: newValue)
-            }
+          .toggleStyle(.switch)
+          .labelsHidden()
+          .controlSize(.small)
+          .onChange(of: launchAtLogin) { _, newValue in
+            toggleAutoStart(enabled: newValue)
+          }
         }
       
       Divider().padding(.vertical, 8)
