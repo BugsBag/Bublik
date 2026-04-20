@@ -53,7 +53,7 @@ struct GeneralSettingsView: View {
       settingRow(
         title: String(localized: "Restart application"),
         description: String(localized: "All changes will be saved.")) {
-          Button(action: relaunchApp) {
+          Button(action: AppUtils.relaunch) {
             Label("Restart application", systemImage: "arrow.clockwise")
           }
           .buttonStyle(.borderedProminent)
@@ -90,21 +90,6 @@ struct GeneralSettingsView: View {
     } catch {
         // TODO - show error to user?
       print("Autostart configuration error: \(error)")
-    }
-  }
-  
-  func relaunchApp() {
-    let conf = NSWorkspace.OpenConfiguration()
-    conf.createsNewApplicationInstance = true
-    NSWorkspace.shared.openApplication(at: Bundle.main.bundleURL, configuration: conf) { _, error in
-      if let error = error {
-        print("Restarting app error: \(error.localizedDescription)")
-        return
-      }
-        // kill old process
-      DispatchQueue.main.async {
-        NSApp.terminate(nil)
-      }
     }
   }
 }
