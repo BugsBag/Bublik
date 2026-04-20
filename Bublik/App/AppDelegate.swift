@@ -16,7 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     // Create menu bar icon
     statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     if let button = statusItem?.button {
-        button.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "Switcher")
+      button.image = NSImage(named: "MenuBarIcon")
     }
 
     setupMenu()
