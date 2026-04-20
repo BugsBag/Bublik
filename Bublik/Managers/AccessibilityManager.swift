@@ -2,14 +2,14 @@ import Cocoa
 import ApplicationServices
 
 struct AccessibilityManager {
-  static func checkAccessibility() -> Bool {
-    // Check if accessibility permissions are granted
-    // Extract string from Unmanaged object
-    let key = kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String
-    let options: [String: Any] = [key: true]
-
-    let isTrusted = AXIsProcessTrustedWithOptions(options as CFDictionary)
-
-    return isTrusted
+    /// Get the Accessibility permissions status
+  static func isTrusted() -> Bool {
+    return AXIsProcessTrusted()
+  }
+  
+    /// Opens System Settings for Accessibility
+  static func openSystemSettings() {
+    let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!
+    NSWorkspace.shared.open(url)
   }
 }

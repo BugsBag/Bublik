@@ -6,12 +6,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
   var settingsWindow: NSWindow?
 
   func applicationDidFinishLaunching(_ notification: Notification) {
-      // check accessibility permissions
-    if !AccessibilityManager.checkAccessibility() {
-      // TODO show instruction window explaining why access is needed
-      // but actually the system will prompt itself as it is implemented inside checkAccessibility
-    }
-    
       // Register settings defaults
     UserDefaults.standard.register(defaults: [
       "hotkeyCode": -1, // nothing set
@@ -26,8 +20,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
 
     setupMenu()
-    LanguageManager.setup()
-    KeyboardMonitor.shared.start()
+
+    // Check accessibility permissions
+    if !AccessibilityManager.isTrusted() {
+      openAccessibilitySetup()
+    } else {
+      LanguageManager.setup()
+      KeyboardMonitor.shared.start()
+    }
   }
 
   func setupMenu() {
@@ -46,7 +46,35 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     statusItem?.menu = menu
   }
 
+  @objc func openAccessibilitySetup() {
+    if settingsWindow == nil {
+      let contentView = AccessibilitySetupView()
+      let hostingView = NSHostingView(rootView: contentView)
+      
+      settingsWindow = NSWindow(
+        // Compute the ideal size for the current content
+        contentRect: NSRect(origin: .zero, size: hostingView.fittingSize),
+        styleMask: [.titled, .closable],
+        backing: .buffered, defer: false
+      )
+      
+      settingsWindow?.contentView = hostingView
+      settingsWindow?.isReleasedWhenClosed = false
+      settingsWindow?.delegate = self
+      settingsWindow?.center()
+    }
+
+    settingsWindow?.makeKeyAndOrderFront(nil)
+    NSApp.activate(ignoringOtherApps: true)
+  }
+
   @objc func openSettings() {
+    // If no access - redirect to accessibility setup
+    if !AccessibilityManager.isTrusted() {
+      openAccessibilitySetup()
+      return
+    }
+
     if settingsWindow == nil {
         // Create the settings interface
       let contentView = SettingsView()
@@ -55,7 +83,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
       settingsWindow = NSWindow(
         contentRect: .zero,
         styleMask: [.titled, .closable, .miniaturizable],
-        backing: .buffered, defer: false)
+        backing: .buffered, defer: false
+      )
 
       settingsWindow?.contentView = NSHostingView(rootView: contentView)
       settingsWindow?.center()
@@ -69,7 +98,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     NSApp.activate(ignoringOtherApps: true)
   }
 
-  // Null the reference when closing the window to free memory
+    /// Null the reference when closing the window to free memory
   func windowWillClose(_ notification: Notification) {
     settingsWindow = nil
   }
