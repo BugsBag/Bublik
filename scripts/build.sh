@@ -6,7 +6,7 @@ SCHEME_NAME="Bublik" # usually the same as the app name
 TMP_DIR="./tmp" # path relative to the project root
 BUILD_DIR="$TMP_DIR/build_output"
 DMG_DIR="$TMP_DIR/dmg_folder"
-DMG_PATH="$TMP_DIR/Bublik_Installer.dmg"
+DMG_PATH="$TMP_DIR/Bublik.dmg"
 
 echo "Build started..."
 
