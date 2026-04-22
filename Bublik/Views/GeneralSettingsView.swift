@@ -2,14 +2,18 @@ import SwiftUI
 import ServiceManagement
 
 struct GeneralSettingsView: View {
+  @ObservedObject var updateManager = UpdateManager.shared
+  
   @AppStorage("launchAtLogin") private var launchAtLogin = false
-  // get first element from array or awalable languages
+    // get first element from array or awalable languages
   @AppStorage("selectedLanguage") private var selectedLanguage: String = {
     let current = UserDefaults.standard.stringArray(forKey: "AppleLanguages")?.first
     return current ?? "en"
   }()
+  @AppStorage("updateInterval") private var updateInterval = "never"
   
   @State private var isRestartButtonDisabled = false
+  @State private var manualCheckResult: UpdateCheckResult? = nil
   
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
@@ -51,6 +55,51 @@ struct GeneralSettingsView: View {
       
       Divider().padding(.vertical, 8)
       
+        // Updates section
+      settingRow(
+        title: String(localized: "Updates"),
+        description: String(localized: "Configure how often Bublik checks for new versions on GitHub.")) {
+          VStack(alignment: .trailing, spacing: 8) {
+            Picker(selection: $updateInterval) {
+              Text("Never").tag("never")
+              Text("Daily").tag("daily")
+              Text("Weekly").tag("weekly")
+              Text("Monthly").tag("monthly")
+            } label: {
+                // skip adding the title to the localization
+              Text(verbatim: "")
+            }
+            .labelsHidden()
+            .fixedSize()
+            .onChange(of: updateInterval) { _, _ in
+              updateManager.setupBackgroundActivity()
+            }
+            
+            Button {
+              updateManager.checkForUpdates(isManual: true) { result in
+                self.manualCheckResult = result
+              }
+            } label: {
+              HStack(spacing: 6) {
+                if updateManager.isChecking {
+                  ProgressView().controlSize(.small)
+                  Text("Checking updates...")
+                } else if manualCheckResult == .updated {
+                  Text("No updates found")
+                } else if manualCheckResult == .available {
+                  Text("Update found")
+                } else {
+                  Text("Check now")
+                }
+              }
+            }
+            .buttonStyle(.bordered)
+            .disabled(updateManager.isChecking || manualCheckResult != nil)
+          }
+        }
+      
+      Divider().padding(.vertical, 8)
+      
         // Restart app section
       settingRow(
         title: String(localized: "Restart application"),
@@ -69,7 +118,7 @@ struct GeneralSettingsView: View {
     .padding()
   }
   
-  /// Helper view for build compact row
+    /// Helper view for build compact row
   @ViewBuilder
   private func settingRow<Content: View>(title: String, description: String, @ViewBuilder content: () -> Content) -> some View {
     HStack(alignment: .center) {
@@ -101,5 +150,5 @@ struct GeneralSettingsView: View {
 }
 
 #Preview {
-    GeneralSettingsView()
+  GeneralSettingsView()
 }

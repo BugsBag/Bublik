@@ -18,4 +18,8 @@ extension Bundle {
   }
 
   var githubURL: String { "https://github.com/BugsBag/Bublik" }
+  
+  var githubApiLatestReleaseURL: String {
+    "https://api.github.com/repos/BugsBag/Bublik/releases/latest"
+  }
 }

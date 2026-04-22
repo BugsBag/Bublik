@@ -27,6 +27,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     } else {
       LanguageManager.setup()
       KeyboardMonitor.shared.start()
+      UpdateManager.shared.checkForUpdates(isManual: false)
     }
   }
 
