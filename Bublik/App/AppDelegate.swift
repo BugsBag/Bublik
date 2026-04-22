@@ -2,9 +2,8 @@ import Cocoa
 import SwiftUI
 
 class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
-  var statusItem: NSStatusItem?
-  var settingsWindow: NSWindow?
-
+  var setupWindow: NSWindow?
+  
   func applicationDidFinishLaunching(_ notification: Notification) {
       // Register settings defaults
     UserDefaults.standard.register(defaults: [
@@ -13,15 +12,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
       "launchAtLogin": false
     ])
     
-    // Create menu bar icon
-    statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-    if let button = statusItem?.button {
-      button.image = NSImage(named: "MenuBarIcon")
-    }
-
-    setupMenu()
-
-    // Check accessibility permissions
+      // Check accessibility permissions
     if !AccessibilityManager.isTrusted() {
       openAccessibilitySetup()
     } else {
@@ -30,80 +21,39 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
       UpdateManager.shared.checkForUpdates(isManual: false)
     }
   }
-
-  func setupMenu() {
-    let menu = NSMenu()
-    
-    let settingsItem = NSMenuItem(title: String(localized: "Settings"), action: #selector(openSettings), keyEquivalent: "")
-    settingsItem.image = NSImage(systemSymbolName: "gear", accessibilityDescription: nil)
-    menu.addItem(settingsItem)
-    
-    menu.addItem(NSMenuItem.separator())
-    
-    let quitItem = NSMenuItem(title: String(localized: "Quit"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "")
-    quitItem.image = NSImage(systemSymbolName: "power", accessibilityDescription: nil)
-    menu.addItem(quitItem)
-
-    statusItem?.menu = menu
-  }
-
+  
   @objc func openAccessibilitySetup() {
-    if settingsWindow == nil {
+    if setupWindow == nil {
       let contentView = AccessibilitySetupView()
       let hostingView = NSHostingView(rootView: contentView)
       
-      settingsWindow = NSWindow(
+      setupWindow = NSWindow(
         // Compute the ideal size for the current content
         contentRect: NSRect(origin: .zero, size: hostingView.fittingSize),
         styleMask: [.titled, .closable],
-        backing: .buffered, defer: false
+        backing: .buffered,
+        defer: false
       )
       
-      settingsWindow?.contentView = hostingView
-      settingsWindow?.isReleasedWhenClosed = false
-      settingsWindow?.delegate = self
-      settingsWindow?.center()
+      setupWindow?.contentView = hostingView
+      setupWindow?.isReleasedWhenClosed = false
+      setupWindow?.delegate = self
+      setupWindow?.center()
     }
-
-    settingsWindow?.makeKeyAndOrderFront(nil)
+    
+    setupWindow?.makeKeyAndOrderFront(nil)
     NSApp.activate(ignoringOtherApps: true)
   }
-
-  @objc func openSettings() {
-    // If no access - redirect to accessibility setup
-    if !AccessibilityManager.isTrusted() {
-      openAccessibilitySetup()
-      return
-    }
-
-    if settingsWindow == nil {
-        // Create the settings interface
-      let contentView = SettingsView()
-      
-        // Create window
-      settingsWindow = NSWindow(
-        contentRect: .zero,
-        styleMask: [.titled, .closable, .miniaturizable],
-        backing: .buffered, defer: false
-      )
-
-      settingsWindow?.contentView = NSHostingView(rootView: contentView)
-      settingsWindow?.center()
-      settingsWindow?.isReleasedWhenClosed = false // Swift ARC will clear memory when the reference is nulled
-      settingsWindow?.delegate = self // Set delegate for nulling the reference
-    }
-
-    // Show window
-    settingsWindow?.makeKeyAndOrderFront(nil)
-    // Bring application to foreground
-    NSApp.activate(ignoringOtherApps: true)
-  }
-
+  
   func windowWillClose(_ notification: Notification) {
+    guard let window = notification.object as? NSWindow else { return }
+    
       // If the accessibility setup window is closed without granting permissions, the app terminates.
-    if !AccessibilityManager.isTrusted() {
-      AppUtils.quit()
+    if window == setupWindow {
+      if !AccessibilityManager.isTrusted() {
+        AppUtils.quit()
+      }
+      setupWindow = nil
     }
-    settingsWindow = nil
   }
 }
