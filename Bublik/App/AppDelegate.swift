@@ -22,6 +22,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
   }
   
+  func applicationDidUpdate(_ notification: Notification) {
+      // check if there are visible windows (excluding system/hidden)
+    let visibleWindows = NSApp.windows.filter { $0.isVisible && $0.canBecomeKey }
+    
+      // show or hide icon in Dock
+    if !visibleWindows.isEmpty {
+      if NSApp.activationPolicy() != .regular {
+        NSApp.setActivationPolicy(.regular)
+        guard let window = visibleWindows.first else { return }
+          // if this is the settings, window bring it to the foreground
+        if window == setupWindow {
+          NSApp.activate(ignoringOtherApps: true)
+        }
+      }
+    } else {
+      NSApp.setActivationPolicy(.accessory)
+    }
+  }
+  
   @objc func openAccessibilitySetup() {
     if setupWindow == nil {
       let contentView = AccessibilitySetupView()
