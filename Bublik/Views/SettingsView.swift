@@ -8,7 +8,8 @@ struct SettingsView: View {
     switch selectedTab {
       case 0: return CGSize(width: 550, height: 300) // General
       case 1: return CGSize(width: 550, height: 300) // Hotkeys
-      case 2: return CGSize(width: 450, height: 280) // About
+      case 2: return CGSize(width: 550, height: 350) // Excluded apps
+      case 3: return CGSize(width: 550, height: 280) // About
       default: return CGSize(width: 500, height: 300)
     }
   }
@@ -35,9 +36,14 @@ struct SettingsView: View {
         .tag(1)
         .navigationTitle(Text(verbatim: ""))
 
+      ExclusionSettingsView()
+        .tabItem { Label("Excluded", systemImage: "nosign") }
+        .tag(2)
+        .navigationTitle(Text(verbatim: ""))
+
       AboutView()
         .tabItem { Label("About", systemImage: "info.circle") }
-        .tag(2)
+        .tag(3)
         .navigationTitle(Text(verbatim: ""))
     }
     .padding(32)

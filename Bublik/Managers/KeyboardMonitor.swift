@@ -71,6 +71,11 @@ class KeyboardMonitor {
   }
   
   private func handleEvent(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
+    // Exclude apps check
+    if ExclusionManager.shared.isCurrentAppExcluded() {
+      return Unmanaged.passRetained(event)
+    }
+
     // If no hotkey set - just pass through
     if cachedKeyCode == -1 && cachedModifiersRaw == 0 {
       return Unmanaged.passRetained(event)
