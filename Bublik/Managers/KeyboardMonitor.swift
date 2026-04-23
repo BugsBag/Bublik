@@ -83,22 +83,32 @@ class KeyboardMonitor {
     // SCENARIO 1: Modifiers only (e.g., Cmd+Shift)
     if cachedKeyCode == -1 {
       if type == .flagsChanged {
-        let isMatch = currentCleanFlags == cachedTargetCGFlags
+        let exactlyTarget = currentCleanFlags == cachedTargetCGFlags
+        let containsTarget = currentCleanFlags.contains(cachedTargetCGFlags)
         
-        if isMatch {
+        if exactlyTarget {
           self.isModifierKeyPathActive = true
+        } else if containsTarget {
+            // Pressed more than necessary
+            // (for example, Cmd+Shift+Opt when pressing Cmd+Shift).
+            // Mark it as "dirty" to skip switching when released.
+          self.didPressAnyOtherKeyDuringModifiers = true
         } else if self.isModifierKeyPathActive {
-          // If we were matching and now releasing, and no other keys were pressed
+            // If we were in an active state and now the flags don't
+            // contain the target — it means something was released.
           if !self.didPressAnyOtherKeyDuringModifiers {
             LanguageManager.toggleLanguage()
           }
+            // Reset the state
           self.isModifierKeyPathActive = false
           self.didPressAnyOtherKeyDuringModifiers = false
         }
+        
       } else if type == .keyDown && self.isModifierKeyPathActive {
-        // If a regular key is pressed while we are tracking modifiers - invalidate the switch
+          // A regular key was pressed while we are tracking modifiers - invalidate the switch
         self.didPressAnyOtherKeyDuringModifiers = true
       }
+
       return Unmanaged.passRetained(event)
     }
     
