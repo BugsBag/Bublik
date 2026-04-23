@@ -116,6 +116,9 @@ struct GeneralSettingsView: View {
         }
     }
     .frame(alignment: .center)
+    .onAppear {
+      manualCheckResult = nil
+    }
   }
   
     /// Helper view for build compact row
