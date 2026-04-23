@@ -80,7 +80,7 @@ struct UpdateAvailableView: View {
         }
       }
     }
-    .padding(25)
+    .padding(20)
     .frame(width: 550, height: (isManual && version == manager.skippedVersion) ? 230 : 190)
     .animation(.default, value: manager.downloadedFileURL)
   }

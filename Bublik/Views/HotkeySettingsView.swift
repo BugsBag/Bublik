@@ -74,7 +74,6 @@ struct HotkeySettingsView: View {
       .foregroundColor(.secondary)
       .frame(maxWidth: .infinity, alignment: .leading)
     }
-    .padding()
     .background(KeyEventHandling(
       isRecording: $isRecording,
       keyCode: $hotkeyCode,
@@ -82,6 +81,7 @@ struct HotkeySettingsView: View {
       tempCode: $tempCode,
       tempMods: $tempModifiers
     ))
+    .frame(alignment: .center)
   }
   
   func displayString(code: Int, mods: Int) -> String {

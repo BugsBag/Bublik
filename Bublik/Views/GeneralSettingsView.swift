@@ -115,13 +115,13 @@ struct GeneralSettingsView: View {
           .disabled(isRestartButtonDisabled)
         }
     }
-    .padding()
+    .frame(alignment: .center)
   }
   
     /// Helper view for build compact row
   @ViewBuilder
   private func settingRow<Content: View>(title: String, description: String, @ViewBuilder content: () -> Content) -> some View {
-    HStack(alignment: .center) {
+    HStack(alignment: .top) {
       VStack(alignment: .leading, spacing: 2) {
         Text(title)
           .font(.system(size: 13, weight: .medium))

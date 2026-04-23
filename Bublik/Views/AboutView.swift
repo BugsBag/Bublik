@@ -55,7 +55,7 @@ struct AboutView: View {
       .padding(.top, 10)
 
     }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .frame(alignment: .center)
   }
 }
 
