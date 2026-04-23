@@ -36,7 +36,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
           NSApp.activate(ignoringOtherApps: true)
         }
       }
-    } else {
+    } else if NSApp.activationPolicy() != .accessory {
       NSApp.setActivationPolicy(.accessory)
     }
   }
