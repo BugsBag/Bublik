@@ -30,11 +30,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     if !visibleWindows.isEmpty {
       if NSApp.activationPolicy() != .regular {
         NSApp.setActivationPolicy(.regular)
-        guard let window = visibleWindows.first else { return }
-          // if this is the settings, window bring it to the foreground
-        if window == setupWindow {
-          NSApp.activate(ignoringOtherApps: true)
-        }
+        NSApp.activate(ignoringOtherApps: true)
       }
     } else if NSApp.activationPolicy() != .accessory {
       NSApp.setActivationPolicy(.accessory)
