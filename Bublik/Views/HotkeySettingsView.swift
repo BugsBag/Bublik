@@ -54,6 +54,7 @@ struct HotkeySettingsView: View {
       VStack(alignment: .leading, spacing: 12) {
         Text("Click the field and press the hotkey. Recording will finish when you release the keys.")
           .lineLimit(nil)
+          .fixedSize(horizontal: false, vertical: true)
         
           // Determine current values for highlighting logic
         let currentCode = isRecording ? tempCode : hotkeyCode
@@ -111,6 +112,7 @@ struct HotkeySettingsView: View {
         .lineLimit(nil)
         .foregroundColor(isActive ? .green : .secondary)
         .fontWeight(isActive ? .medium : .regular)
+        .fixedSize(horizontal: false, vertical: true)
     }
   }
 }

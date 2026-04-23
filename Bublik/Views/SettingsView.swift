@@ -6,8 +6,8 @@ struct SettingsView: View {
   
   private var currentSize: CGSize {
     switch selectedTab {
-      case 0: return CGSize(width: 500, height: 300) // General
-      case 1: return CGSize(width: 500, height: 250) // Hotkeys
+      case 0: return CGSize(width: 550, height: 300) // General
+      case 1: return CGSize(width: 550, height: 300) // Hotkeys
       case 2: return CGSize(width: 450, height: 280) // About
       default: return CGSize(width: 500, height: 300)
     }

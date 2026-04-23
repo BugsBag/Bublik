@@ -128,6 +128,7 @@ struct GeneralSettingsView: View {
         Text(description)
           .font(.system(size: 11))
           .foregroundColor(.secondary)
+          .fixedSize(horizontal: false, vertical: true)
       }
       Spacer()
       content()
