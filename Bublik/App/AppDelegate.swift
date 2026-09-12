@@ -20,12 +20,30 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
       KeyboardMonitor.shared.start()
       UpdateManager.shared.checkForUpdates(isManual: false)
     }
+
+      // Track window lifecycle to toggle the Dock icon
+      // (visible window — regular app, no windows — menu bar accessory)
+    NotificationCenter.default.addObserver(
+      forName: NSWindow.didBecomeKeyNotification,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      Task { @MainActor in self?.updateActivationPolicy() }
+    }
+    NotificationCenter.default.addObserver(
+      forName: NSWindow.willCloseNotification,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+        // Defer the check until the window is fully closed
+      Task { @MainActor in self?.updateActivationPolicy() }
+    }
   }
-  
-  func applicationDidUpdate(_ notification: Notification) {
+
+  private func updateActivationPolicy() {
       // check if there are visible windows (excluding system/hidden)
     let visibleWindows = NSApp.windows.filter { $0.isVisible && $0.canBecomeKey }
-    
+
       // show or hide icon in Dock
     if !visibleWindows.isEmpty {
       if NSApp.activationPolicy() != .regular {
