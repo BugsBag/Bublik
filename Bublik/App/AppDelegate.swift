@@ -1,4 +1,5 @@
 import Cocoa
+import ServiceManagement
 import SwiftUI
 
 class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
@@ -11,6 +12,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
       "hotkeyModifiers": 0,
       "launchAtLogin": false
     ])
+
+      // The system tracks login items by path, so moving or replacing the app
+      // leaves a stale entry that silently never launches. Re-register to heal it.
+    if UserDefaults.standard.bool(forKey: "launchAtLogin"), SMAppService.mainApp.status != .enabled {
+      try? SMAppService.mainApp.register()
+    }
     
       // Check accessibility permissions
     if !AccessibilityManager.isTrusted() {

@@ -121,6 +121,9 @@ struct GeneralSettingsView: View {
     .frame(alignment: .center)
     .onAppear {
       manualCheckResult = nil
+        // Reflect the real login item state: the user can disable the app
+        // in System Settings > Login Items without touching this toggle
+      launchAtLogin = SMAppService.mainApp.status == .enabled
     }
   }
   
@@ -150,8 +153,15 @@ struct GeneralSettingsView: View {
         try service.unregister()
       }
     } catch {
-        // TODO - show error to user?
+        // The system rejected the change (e.g. the user disabled the app
+        // in System Settings > Login Items): revert the toggle to the real state
       print("Autostart configuration error: \(error)")
+      DispatchQueue.main.async {
+        launchAtLogin = SMAppService.mainApp.status == .enabled
+      }
+      if service.status == .requiresApproval {
+        SMAppService.openSystemSettingsLoginItems()
+      }
     }
   }
 }
