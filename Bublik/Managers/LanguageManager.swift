@@ -29,6 +29,8 @@ class LanguageManager {
           cachedSources = nil
         }
     }
+
+    setupKeyboardCacheInvalidation()
   }
 
   static func toggleLanguage() {

@@ -6,6 +6,27 @@ import Cocoa
 private let cachedKeyboardType = UInt32(LMGetKbdType())
 private var cachedASCIISource: TISInputSource?
 
+/// Drops the cached input source whenever the user switches the keyboard
+/// layout or edits the list of input sources in System Settings.
+func setupKeyboardCacheInvalidation() {
+  let center = DistributedNotificationCenter.default()
+  let notifications: [String] = [
+    kTISNotifySelectedKeyboardInputSourceChanged as String,
+    kTISNotifyEnabledKeyboardInputSourcesChanged as String
+  ]
+  for name in notifications {
+    center.addObserver(
+      forName: NSNotification.Name(name),
+      object: nil,
+      queue: .main
+    ) { _ in
+      Task { @MainActor in
+        cachedASCIISource = nil
+      }
+    }
+  }
+}
+
 /// Returns a string representation of the key code based on the current layout
 func nameForKeyCode(_ keyCode: Int) -> String {
   if keyCode == -1 { return "" }
