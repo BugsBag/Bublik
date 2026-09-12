@@ -33,6 +33,18 @@
 - **Custom Hotkeys**: Support for both standard combinations (e.g., Cmd + Shift + A) and modifier-only switching (e.g., just Cmd + Shift).
 - **Privacy-Focused**: Open-source and transparent. No data collection, just switching.
 
+### Supported Languages:
+
+The app interface is available in:
+
+- English
+- Русский
+- 日本語
+- 한국어
+- 简体中文
+
+You can change the language in the **System** tab of the app settings (a restart is required).
+
 ## Installation
 
 Since **Bublik** is currently distributed without a paid Apple Developer certificate, macOS Gatekeeper will block it by default. Follow these steps to get it running:
