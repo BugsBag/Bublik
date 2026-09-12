@@ -1,6 +1,9 @@
 import Foundation
 import Carbon
 
+/// Switches between the enabled keyboard input sources.
+/// Isolated to the main actor because the Carbon TIS APIs require the main thread.
+@MainActor
 class LanguageManager {
   private static var isSwitching = false
   private static var lastSwitchTime: Date = .distantPast
@@ -22,7 +25,9 @@ class LanguageManager {
         object: nil,
         queue: .main
     ) { _ in
-        cachedSources = nil
+        Task { @MainActor in
+          cachedSources = nil
+        }
     }
   }
 
@@ -34,36 +39,33 @@ class LanguageManager {
     }
     
     isSwitching = true
-    
-    // Execute on main thread since TISSelectInputSource works with UI state
-    DispatchQueue.main.async {
-      defer {
-        isSwitching = false
-        lastSwitchTime = Date()
-      }
-      
-      // Get current layout
-      guard let currentSource = TISCopyCurrentKeyboardInputSource()?.takeRetainedValue() else { return }
-      let currentID = getID(currentSource)
-      
-      // Get or update sources list
-      if cachedSources == nil {
-          guard let sources = TISCreateInputSourceList(inputSourceFilter, false)?.takeRetainedValue() as? [TISInputSource] else { return }
-          // Filter only keyboard layouts
-          cachedSources = sources.filter { isKeyboardLayout($0) }
-      }
-      
-      guard let selectableSources = cachedSources, !selectableSources.isEmpty else { return }
-      
-      // Find next
-      if let currentIndex = selectableSources.firstIndex(where: { getID($0) == currentID }) {
-        let nextIndex = (currentIndex + 1) % selectableSources.count
-        TISSelectInputSource(selectableSources[nextIndex])
-      } else {
-        // If current not found (e.g. list changed), just take first and reset cache
-        TISSelectInputSource(selectableSources[0])
-        cachedSources = nil
-      }
+
+    defer {
+      isSwitching = false
+      lastSwitchTime = Date()
+    }
+
+    // Get current layout
+    guard let currentSource = TISCopyCurrentKeyboardInputSource()?.takeRetainedValue() else { return }
+    let currentID = getID(currentSource)
+
+    // Get or update sources list
+    if cachedSources == nil {
+        guard let sources = TISCreateInputSourceList(inputSourceFilter, false)?.takeRetainedValue() as? [TISInputSource] else { return }
+        // Filter only keyboard layouts
+        cachedSources = sources.filter { isKeyboardLayout($0) }
+    }
+
+    guard let selectableSources = cachedSources, !selectableSources.isEmpty else { return }
+
+    // Find next
+    if let currentIndex = selectableSources.firstIndex(where: { getID($0) == currentID }) {
+      let nextIndex = (currentIndex + 1) % selectableSources.count
+      TISSelectInputSource(selectableSources[nextIndex])
+    } else {
+      // If current not found (e.g. list changed), just take first and reset cache
+      TISSelectInputSource(selectableSources[0])
+      cachedSources = nil
     }
   }
   

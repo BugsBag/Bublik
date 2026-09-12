@@ -111,7 +111,7 @@ class KeyboardMonitor {
             // If we were in an active state and now the flags don't
             // contain the target — it means something was released.
           if !self.didPressAnyOtherKeyDuringModifiers {
-            LanguageManager.toggleLanguage()
+            Task { @MainActor in LanguageManager.toggleLanguage() }
           }
             // Reset the state
           self.isModifierKeyPathActive = false
@@ -135,7 +135,7 @@ class KeyboardMonitor {
           // If it is an auto-repeat — just "swallow" the event without switching language
         if isRepeat { return nil }
         
-        LanguageManager.toggleLanguage()
+        Task { @MainActor in LanguageManager.toggleLanguage() }
         return nil // "Swallow" the press
       }
     }
