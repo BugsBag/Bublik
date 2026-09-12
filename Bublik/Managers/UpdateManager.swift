@@ -35,7 +35,7 @@ class UpdateManager: ObservableObject {
   
   private var updateWindow: NSWindow?
   private var backgroundActivity: NSBackgroundActivityScheduler?
-  private let activityIdentifier = Bundle.main.bundleIdentifier! + ".updateCheck"
+  private let activityIdentifier = (Bundle.main.bundleIdentifier ?? "Bublik") + ".updateCheck"
   
   private init() {
     setupBackgroundActivity()
