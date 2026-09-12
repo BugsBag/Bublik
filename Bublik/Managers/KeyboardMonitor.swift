@@ -58,6 +58,15 @@ class KeyboardMonitor {
       options: .defaultTap,
       eventsOfInterest: CGEventMask(mask),
       callback: { (proxy, type, event, refcon) -> Unmanaged<CGEvent>? in
+        // The system can disable the event tap (e.g. if the callback was too slow
+        // or the user disabled it). Re-enable it here, at the tap lifecycle level,
+        // otherwise layout switching silently stops working until app restart.
+        if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
+          if let tap = KeyboardMonitor.shared.eventTap {
+            CGEvent.tapEnable(tap: tap, enable: true)
+          }
+          return nil
+        }
         return KeyboardMonitor.shared.handleEvent(proxy: proxy, type: type, event: event)
       },
       userInfo: nil
