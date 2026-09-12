@@ -22,7 +22,7 @@ enum UpdateCheckResult {
 class UpdateManager: ObservableObject {
   static let shared = UpdateManager()
   
-  let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
+  let currentVersion = Bundle.main.appVersion
   
   @AppStorage("skippedVersion") var skippedVersion: String = ""
   @AppStorage("updateInterval") var updateInterval = "never"
