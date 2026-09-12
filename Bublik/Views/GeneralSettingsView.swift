@@ -40,8 +40,11 @@ struct GeneralSettingsView: View {
         title: String(localized: "Language"),
         description: String(localized: "Changing the language will have consequences after restarting the application.")) {
           Picker(selection: $selectedLanguage) {
-            Text("English").tag("en")
-            Text("Russian").tag("ru")
+            Text(verbatim: "English").tag("en")
+            Text(verbatim: "Русский").tag("ru")
+            Text(verbatim: "日本語").tag("ja")
+            Text(verbatim: "한국어").tag("ko")
+            Text(verbatim: "简体中文").tag("zh-Hans")
           } label: {
               // skip adding the title to the localization
             Text(verbatim: "")
