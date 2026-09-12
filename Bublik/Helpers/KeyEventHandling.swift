@@ -111,7 +111,7 @@ struct KeyEventHandling: NSViewRepresentable {
       }
     }
     
-    deinit {
+    isolated deinit {
       // Safety net: ensure monitors are removed if the Coordinator is deallocated.
       stopMonitoring()
     }
