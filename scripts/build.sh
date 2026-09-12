@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Abort on any error, undefined variable, or failed command in a pipeline
+set -euo pipefail
+
 # Settings
 APP_NAME="Bublik"
 SCHEME_NAME="Bublik" # usually the same as the app name
@@ -24,7 +27,7 @@ xcodebuild -scheme "$SCHEME_NAME" \
            clean build
 
 # Path to the compiled .app file
-APP_PATH=$(find "$BUILD_DIR" -name "$APP_NAME.app" -type d | head -n 1)
+APP_PATH=$(find "$BUILD_DIR" -name "$APP_NAME.app" -type d -print -quit)
 
 if [ -z "$APP_PATH" ]; then
     echo "Error: Failed to find the compiled .app"
