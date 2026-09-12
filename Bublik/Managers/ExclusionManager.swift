@@ -11,15 +11,36 @@ class ExclusionManager: ObservableObject {
       UserDefaults.standard.set(excludedApps, forKey: storageKey)
     }
   }
-  
+
+    // Bundle identifier of the frontmost application.
+    // Updated via NSWorkspace notifications so that the keyboard event tap
+    // callback never has to call NSWorkspace directly (which can block).
+    // The lock protects cross-thread access (event tap thread vs. main thread).
+  private let frontmostAppLock = NSLock()
+  private var cachedFrontmostAppId: String?
+
+  private var frontmostAppId: String? {
+    get { frontmostAppLock.withLock { cachedFrontmostAppId } }
+    set { frontmostAppLock.withLock { cachedFrontmostAppId = newValue } }
+  }
+
   private init() {
     self.excludedApps = UserDefaults.standard.stringArray(forKey: storageKey) ?? []
+    self.cachedFrontmostAppId = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
+
+    NSWorkspace.shared.notificationCenter.addObserver(
+      forName: NSWorkspace.didActivateApplicationNotification,
+      object: nil,
+      queue: .main
+    ) { [weak self] notification in
+      let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication
+      self?.frontmostAppId = app?.bundleIdentifier
+    }
   }
-  
+
     /// Checks if the current active application is in the exclusion list
   func isCurrentAppExcluded() -> Bool {
-      // Get the bundle identifier of the currently active application
-    guard let activeAppId = NSWorkspace.shared.frontmostApplication?.bundleIdentifier else {
+    guard let activeAppId = frontmostAppId else {
       return false
     }
     return excludedApps.contains(activeAppId)
