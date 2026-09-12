@@ -1,7 +1,7 @@
 import SwiftUI
 import Combine
 
-  // GitHub API respose models
+  // GitHub API response models
 struct GitHubAsset: Codable {
   let name: String
   let browser_download_url: String
@@ -13,8 +13,8 @@ struct GitHubRelease: Codable {
 }
 
 enum UpdateCheckResult {
-  case updated      // Обновлений нет
-  case available    // Найдено новое
+  case updated      // Already up to date
+  case available    // New version available
 }
 
 // MainActor because we can call methods from background thread

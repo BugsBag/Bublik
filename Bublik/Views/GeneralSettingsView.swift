@@ -5,7 +5,7 @@ struct GeneralSettingsView: View {
   @ObservedObject var updateManager = UpdateManager.shared
   
   @AppStorage("launchAtLogin") private var launchAtLogin = false
-    // get first element from array or awalable languages
+    // get the first element from the array of available languages
   @AppStorage("selectedLanguage") private var selectedLanguage: String = {
     let current = UserDefaults.standard.stringArray(forKey: "AppleLanguages")?.first
     return current ?? "en"
@@ -35,7 +35,7 @@ struct GeneralSettingsView: View {
       
       Divider().padding(.vertical, 8)
       
-        // Lanuage select section
+        // Language select section
       settingRow(
         title: String(localized: "Language"),
         description: String(localized: "Changing the language will have consequences after restarting the application.")) {
@@ -121,7 +121,7 @@ struct GeneralSettingsView: View {
     }
   }
   
-    /// Helper view for build compact row
+    /// Helper view for building a compact row
   @ViewBuilder
   private func settingRow<Content: View>(title: String, description: String, @ViewBuilder content: () -> Content) -> some View {
     HStack(alignment: .top) {
