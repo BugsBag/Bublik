@@ -34,6 +34,7 @@ class UpdateManager: ObservableObject {
   var lastFoundAssetURL: String? = nil
   
   private var updateWindow: NSWindow?
+  private var backgroundActivity: NSBackgroundActivityScheduler?
   private let activityIdentifier = Bundle.main.bundleIdentifier! + ".updateCheck"
   
   private init() {
@@ -83,9 +84,16 @@ class UpdateManager: ObservableObject {
   }
   
   func setupBackgroundActivity() {
+    // Always invalidate the previous scheduler before creating a new one
+    // to avoid stacking duplicate activities.
+    backgroundActivity?.invalidate()
+    backgroundActivity = nil
+
     let interval = getIntervalInSeconds()
     if interval <= 0 { return }
-    
+
+    // The scheduler must be retained, otherwise it is deallocated
+    // and the background check never fires.
     let activity = NSBackgroundActivityScheduler(identifier: activityIdentifier)
     activity.repeats = true
     activity.interval = interval
@@ -98,6 +106,7 @@ class UpdateManager: ObservableObject {
         completion(.finished)
       }
     }
+    backgroundActivity = activity
   }
   
   private func getIntervalInSeconds() -> TimeInterval {
