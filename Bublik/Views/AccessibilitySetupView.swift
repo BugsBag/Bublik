@@ -86,8 +86,8 @@ struct AccessibilitySetupView: View {
   
   private func startPermissionCheck() {
     checkTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { _ in
-      if AccessibilityManager.isTrusted() {
-        DispatchQueue.main.async {
+      Task { @MainActor in
+        if AccessibilityManager.isTrusted() {
           self.stopPermissionCheck()
           AppUtils.relaunch()
         }

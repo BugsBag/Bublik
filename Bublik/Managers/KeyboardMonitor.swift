@@ -24,7 +24,9 @@ class KeyboardMonitor {
       object: nil,
       queue: .main
     ) { [weak self] _ in
-      self?.updateConfig()
+      Task { @MainActor in
+        self?.updateConfig()
+      }
     }
   }
   

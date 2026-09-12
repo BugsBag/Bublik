@@ -34,7 +34,9 @@ class ExclusionManager: ObservableObject {
       queue: .main
     ) { [weak self] notification in
       let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication
-      self?.frontmostAppId = app?.bundleIdentifier
+      Task { @MainActor in
+        self?.frontmostAppId = app?.bundleIdentifier
+      }
     }
   }
 
